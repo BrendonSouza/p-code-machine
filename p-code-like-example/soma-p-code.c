@@ -43,11 +43,7 @@ int base(int l)
 
 int main()
 {
-/*
-***
-**
-* Formatar a saída para que seja possivel ver a pilha a cada execução do while
-*/
+
     code[0].f = INT;
     code[0].l = 0;
     code[0].a = 4;
@@ -90,7 +86,7 @@ int main()
     s[3] = 0;
     do
     {
-        printf("\n t = %d, b = %d, p = %d \n", t, b, p);
+        printf("\n t = %d, b = %d, p = %d ", t, b, p);
         i = code[p];
         p = p + 1;
         switch (i.f)
@@ -204,7 +200,7 @@ int main()
 
         }
         if(t!=0){
-            printf("Stack:");
+            printf("| Pilha de dados:");
             for(int i=1;i<=t;i++){
                 printf("[%d] ",s[i]);
             }

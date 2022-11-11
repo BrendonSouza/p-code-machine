@@ -172,7 +172,7 @@ int main()
         }
         if(t!=0){
             printf("Stack:");
-            for(int i=1;i<=t;i++){
+            for(int i=1;i<=t+3;i++){
                 printf("[%d] ",s[i]);
             }
         }
