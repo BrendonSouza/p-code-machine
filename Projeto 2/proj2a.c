@@ -5,6 +5,47 @@
 char stack[STACKSIZE];
 int top = -1;
 
+int indice0fDad = 0;
+char aas[9999999];
+int qtdOcorrE;
+int qtdOcorrX;
+
+
+int findIndiceOfDad(char c){
+    int qtdOcorr=0;
+    for (int i = 0; i < 9999999; i++)
+    {
+        if (aas[i] == c)
+        {
+            //verifica se E tem filho
+           if(c == 'E'){
+            if(i != 21){
+                if(aas[i*12+1] == '\0'){
+                    return i;
+                }
+
+            }
+
+            }
+            else if(c == 'X'){
+                if(aas[i*12+1] == '\0'){
+                    return i;
+                }
+            }
+            else if(c =='C'){
+                if(aas[i*12+1] == '\0'){
+                    return i;
+                }
+            }
+            else{
+                return i;
+            }
+
+        }
+    }
+    return -1;
+}
+
 void push(char c)
 {
     if (top < STACKSIZE)
@@ -45,6 +86,7 @@ int main(int argc, char *argv[])
 
 q0:
     push('S');
+    aas[indice0fDad] = 'S';
     goto q1;
 q1:
     token = word[posicao];
@@ -54,6 +96,8 @@ q1:
     {
         pop();
         push('M');
+        indice0fDad = findIndiceOfDad('S')*12+1;
+        aas[indice0fDad] = 'M';
         goto q1;
     }
     // p2: S -> G M
@@ -112,17 +156,53 @@ q1:
     {
         pop();
         push('}');
+        indice0fDad = findIndiceOfDad('M')*12+12;
+        aas[indice0fDad] = '}';  
+
         push(';');
+        indice0fDad = findIndiceOfDad('M')*12+11;
+        aas[indice0fDad] = ';';  
+
         push(')');
+        indice0fDad = findIndiceOfDad('M')*12+10;
+        aas[indice0fDad] = ')';
+
         push('E');
+        indice0fDad = findIndiceOfDad('M')*12+9;
+        aas[indice0fDad] = 'E';  
+
         push('(');
+        indice0fDad = findIndiceOfDad('M')*12+8;
+        aas[indice0fDad] = '(';  
+
         push('r');
+        indice0fDad = findIndiceOfDad('M')*12+7;
+        aas[indice0fDad] = 'r';  
+
         push(';');
+        indice0fDad = findIndiceOfDad('M')*12+6;
+        aas[indice0fDad] = ';';  
+
         push('C');
+        indice0fDad = findIndiceOfDad('M')*12+5;
+        aas[indice0fDad] = 'C';  
+
         push('{');
+        indice0fDad = findIndiceOfDad('M')*12+4;
+        aas[indice0fDad] = '{'; 
+
         push(')');
+        indice0fDad = findIndiceOfDad('M')*12+3;
+        aas[indice0fDad] = ')';  
+
+
         push('(');
+        indice0fDad = findIndiceOfDad('M')*12+2;
+        aas[indice0fDad] = '(';  
+
         push('m');
+        indice0fDad = findIndiceOfDad('M')*12+1;
+        aas[indice0fDad] = 'm';
         goto q1;
     }
     //p7 : E → 0 | 1 | x | y | (EXE)
@@ -130,35 +210,58 @@ q1:
     {
         pop();
         push('0');
+        indice0fDad = findIndiceOfDad('E')*12+1;
+        aas[indice0fDad] = '0';
         goto q1;
     }
     else if ((token == '1') && (stack[top] == 'E'))
     {
         pop();
         push('1');
+        indice0fDad = findIndiceOfDad('E')*12+1;
+        aas[indice0fDad] = '1';
         goto q1;
     }
     else if ((token == 'x') && (stack[top] == 'E'))
     {
         pop();
         push('x');
+        indice0fDad = findIndiceOfDad('E')*12+1;
+        aas[indice0fDad] = 'x';
         goto q1;
     }
     else if ((token == 'y') && (stack[top] == 'E'))
     {
         pop();
         push('y');
+        indice0fDad = findIndiceOfDad('E')*12+1;
+        aas[indice0fDad] = 'y';
         goto q1;
     }
     //p11: E -> (EXE)
     else if ((token == '(') && (stack[top] == 'E'))
     {
+        printf("E->(EXE)");
         pop();
         push(')');
+        indice0fDad = findIndiceOfDad('E')*12+5;
+        aas[indice0fDad] = ')';
+
         push('E');
+        indice0fDad = findIndiceOfDad('E')*12+4;
+        aas[indice0fDad] = 'E';
+
         push('X');
-         push('E');
+        indice0fDad = findIndiceOfDad('E')*12+3;
+        aas[indice0fDad] = 'X';
+
+        push('E');
+        indice0fDad = findIndiceOfDad('E')*12+2;
+        aas[indice0fDad] = 'E';
         push('(');
+        indice0fDad = findIndiceOfDad('E')*12+1;
+        printf("indice0fDad: %d", indice0fDad);
+        aas[indice0fDad] = '(';
         goto q1;
     }
     //p:12 X → + | - | * | /
@@ -166,24 +269,32 @@ q1:
     {
         pop();
         push('+');
+        indice0fDad = findIndiceOfDad('X')*12+1;
+        aas[indice0fDad] = '+';
         goto q1;
     }
     else if ((token == '-') && (stack[top] == 'X'))
     {
         pop();
         push('-');
+        indice0fDad = findIndiceOfDad('X')*12+1;
+        aas[indice0fDad] = '-';
         goto q1;
     }
     else if ((token == '*') && (stack[top] == 'X'))
     {
         pop();
         push('*');
+        indice0fDad = findIndiceOfDad('X')*12+1;
+        aas[indice0fDad] = '*';
         goto q1;
     }
     else if ((token == '/') && (stack[top] == 'X'))
     {
         pop();
         push('/');
+        indice0fDad = findIndiceOfDad('X')*12+1;
+        aas[indice0fDad] = '/';
         goto q1;
     }
 
@@ -192,8 +303,15 @@ q1:
     {
         pop();
         push('E');
+        indice0fDad = findIndiceOfDad('C')*12+3;
+        aas[indice0fDad] = 'E';
         push('=');
+        indice0fDad = findIndiceOfDad('C')*12+2;
+        aas[indice0fDad] = '=';
+
         push('h');
+        indice0fDad = findIndiceOfDad('C')*12+1;
+        aas[indice0fDad] = 'h';
         goto q1;
     }
     else if ((token == 'i') && (stack[top] == 'C'))
@@ -234,10 +352,21 @@ q1:
     {
         pop();
         push(')');
+        indice0fDad = findIndiceOfDad('C')*12+5;
+        aas[indice0fDad] = ')';
+
         push('E');
+        indice0fDad = findIndiceOfDad('C')*12+4;
+        aas[indice0fDad] = 'E';
         push('X');
+        indice0fDad = findIndiceOfDad('C')*12+3;
+        aas[indice0fDad] = 'X';
         push('E');
+        indice0fDad = findIndiceOfDad('C')*12+2;
+        aas[indice0fDad] = 'E';
         push('(');
+        indice0fDad = findIndiceOfDad('C')*12+1;
+        aas[indice0fDad] = '(';
         goto q1;
     }
     //p22: C -> w(E){ C; }
@@ -275,17 +404,41 @@ q1:
     {
         pop();
         push('}');
+        indice0fDad = findIndiceOfDad('C')*12+12;
+        aas[indice0fDad] = '}';
         push(';');
+        indice0fDad = findIndiceOfDad('C')*12+11;
+        aas[indice0fDad] = ';';
         push('C');
+        indice0fDad = findIndiceOfDad('C')*12+10;
+        aas[indice0fDad] = 'C';
         push('{');
+        indice0fDad = findIndiceOfDad('C')*12+9;
+        aas[indice0fDad] = '{';
         push(')');
+        indice0fDad = findIndiceOfDad('C')*12+8;
+        aas[indice0fDad] = ')';
         push('E');
+        indice0fDad = findIndiceOfDad('C')*12+7;
+        aas[indice0fDad] = 'E';
         push(';');
+        indice0fDad = findIndiceOfDad('C')*12+6;
+        aas[indice0fDad] = ';';
         push('E');
+        indice0fDad = findIndiceOfDad('C')*12+5;
+        aas[indice0fDad] = 'E';
         push(';');
+        indice0fDad = findIndiceOfDad('C')*12+4;
+        aas[indice0fDad] = ';';
         push('E');
+        indice0fDad = findIndiceOfDad('C')*12+3;
+        aas[indice0fDad] = 'E';
         push('(');
+        indice0fDad = findIndiceOfDad('C')*12+2;
+        aas[indice0fDad] = '(';
         push('o');
+        indice0fDad = findIndiceOfDad('C')*12+1;
+        aas[indice0fDad] = 'o';
         goto q1;
     }
 
@@ -435,12 +588,20 @@ q1:
         goto q1;
     }
     
+    
 
 
 
     else if (stack[top] == '\0' && token == '\0')
     {
-        printf("palavra consumida");
+        printf("palavra consumida\n\n");
+        for (int i = 0; i < 9999999; i++)
+        {
+            if(aas[i] != '\0'){
+                printf("indice %d | %c\n", i, aas[i]);
+
+            }
+        }
     }
     else
     {

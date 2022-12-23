@@ -4,6 +4,9 @@
 
 char stack[STACKSIZE];
 int top = -1;
+int indice =0;
+char ada[9999999];
+
 
 void push(char c)
 {
@@ -45,6 +48,7 @@ int main(int argc, char *argv[])
 
 q0:
     push('S');
+
     goto q1;
 q1:
     token = word[posicao];

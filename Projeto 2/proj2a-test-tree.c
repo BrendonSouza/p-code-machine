@@ -1,9 +1,74 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #define STACKSIZE 1000
 
 char stack[STACKSIZE];
 int top = -1;
+
+int indice0fSon = 0;
+
+#define MAX_CHILDREN 12
+
+typedef struct Node
+{
+    char value;
+    struct Node *children[MAX_CHILDREN];
+    int visited;
+} Node;
+
+Node *createNode(char value)
+{
+    Node *newNode = (Node *)malloc(sizeof(Node));
+    newNode->value = value;
+    for (int i = 0; i < MAX_CHILDREN; i++)
+    {
+        newNode->children[i] = NULL;
+        newNode->visited = 0;
+    }
+    return newNode;
+}
+
+void insertNode(Node *root, int value)
+{
+
+
+    for (int i = 0; i < MAX_CHILDREN; i++)
+    {
+        if (root->children[i] == NULL)
+        {
+            root->children[i] = createNode(value);
+            printf("Inserted node with value %d\n", value);
+            return;
+        }
+
+    }
+
+    printf("No more space to insert node with value %d\n", value);
+}
+
+Node* root;
+
+// find the first node with an value that is not visited
+Node* findFirstUnvisitedNode(Node* root, char value) {
+    if (root == NULL) {
+        return NULL;
+    }
+
+    if (root->value == value && root->visited == 0) {
+        return root;
+    }
+
+    for (int i = 0; i < MAX_CHILDREN; i++) {
+        Node* node = findFirstUnvisitedNode(root->children[i], value);
+        if (node != NULL) {
+            return node;
+        }
+    }
+
+    return NULL;
+}
+
 
 void push(char c)
 {
@@ -20,6 +85,52 @@ void pop()
         top--;
     }
 }
+
+void print_tree(Node *root)
+{
+    if (root == NULL)
+    {
+        return;
+    }
+
+    printf("%c ", root->value);
+
+    for (int i = 0; i < MAX_CHILDREN; i++)
+    {
+        print_tree(root->children[i]);
+    }
+}
+
+void bfs(Node *root)
+{
+    if (root == NULL)
+    {
+        return;
+    }
+
+    printf("%c ", root->value);
+
+    for (int i = 0; i < MAX_CHILDREN; i++)
+    {
+        bfs(root->children[i]);
+    }
+}
+
+void dfs(Node *root)
+{
+    if (root == NULL)
+    {
+        return;
+    }
+
+    printf("%c ", root->value);
+
+    for (int i = 0; i < MAX_CHILDREN; i++)
+    {
+        dfs(root->children[i]);
+    }
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -45,15 +156,21 @@ int main(int argc, char *argv[])
 
 q0:
     push('S');
+    //insert S as root
+    root = createNode('S');
     goto q1;
 q1:
     token = word[posicao];
 
-// ! p1: S → M
+    // ! p1: S → M
     if ((token == 'm') && (stack[top] == 'S'))
     {
         pop();
         push('M');
+        //insert M as child of S
+        insertNode(root, 'M');
+        //visited S
+        root->visited = 1;
         goto q1;
     }
     // p2: S -> G M
@@ -61,10 +178,14 @@ q1:
     {
         pop();
         push('M');
+        //insert M as child of S
+        insertNode(root, 'M');
         push('G');
+        //insert G as child of S
+        insertNode(root, 'G');
         goto q1;
     }
-    //p3: S -> F G M
+    // p3: S -> F G M
     else if ((token == 'F') && (stack[top] == 'S'))
     {
         pop();
@@ -73,7 +194,7 @@ q1:
         push('F');
         goto q1;
     }
-    //p4: F → f(){ C; r(E); }
+    // p4: F → f(){ C; r(E); }
     else if ((token == 'f') && (stack[top] == 'F'))
     {
         pop();
@@ -110,6 +231,7 @@ q1:
     // p6: M → m(){ C; r(E); }
     else if ((token == 'm') && (stack[top] == 'M'))
     {
+        Node *no = findFirstUnvisitedNode(root, 'M');
         pop();
         push('}');
         push(';');
@@ -123,77 +245,123 @@ q1:
         push(')');
         push('(');
         push('m');
+        insertNode(no, 'm');
+        insertNode(no, '(');
+        insertNode(no, ')');
+        insertNode(no, '{');
+        insertNode(no, 'C');
+        insertNode(no, ';');    
+        insertNode(no, 'r');
+        insertNode(no, '(');    
+        insertNode(no, 'E');
+        insertNode(no, ')');
+        insertNode(no, ';');
+        insertNode(no, '}');
+
+
+        //insert m as child of M
+        
         goto q1;
     }
-    //p7 : E → 0 | 1 | x | y | (EXE)
+    // p7 : E → 0 | 1 | x | y | (EXE)
     else if ((token == '0') && (stack[top] == 'E'))
     {
+        Node *no = findFirstUnvisitedNode(root, 'E');
         pop();
         push('0');
+        insertNode(no, '0');
         goto q1;
     }
     else if ((token == '1') && (stack[top] == 'E'))
     {
+         Node *no = findFirstUnvisitedNode(root, 'E');
         pop();
         push('1');
+        insertNode(no, '1');
         goto q1;
     }
     else if ((token == 'x') && (stack[top] == 'E'))
     {
+         Node *no = findFirstUnvisitedNode(root, 'E');
         pop();
         push('x');
+        insertNode(no, 'x');
         goto q1;
     }
     else if ((token == 'y') && (stack[top] == 'E'))
     {
+         Node *no = findFirstUnvisitedNode(root, 'E');
         pop();
         push('y');
+        insertNode(no, 'y');
         goto q1;
     }
-    //p11: E -> (EXE)
+    // p11: E -> (EXE)
     else if ((token == '(') && (stack[top] == 'E'))
     {
+         Node *no = findFirstUnvisitedNode(root, 'E');
+        printf("E->(EXE)");
         pop();
         push(')');
+
         push('E');
         push('X');
-         push('E');
+        push('E');
         push('(');
+        insertNode(no, '(');
+        insertNode(no, 'E');
+        insertNode(no, 'X');
+        insertNode(no, 'E');
+        insertNode(no, ')');
         goto q1;
     }
-    //p:12 X → + | - | * | /
+    // p:12 X → + | - | * | /
     else if ((token == '+') && (stack[top] == 'X'))
     {
+         Node *no = findFirstUnvisitedNode(root, 'X');
         pop();
         push('+');
+
+        insertNode(no, '+');
         goto q1;
     }
     else if ((token == '-') && (stack[top] == 'X'))
     {
+        Node *no = findFirstUnvisitedNode(root, 'X');
         pop();
         push('-');
+        insertNode(no, '-');
         goto q1;
     }
     else if ((token == '*') && (stack[top] == 'X'))
     {
+        Node *no = findFirstUnvisitedNode(root, 'X');
         pop();
         push('*');
+        insertNode(no, '*');
         goto q1;
     }
     else if ((token == '/') && (stack[top] == 'X'))
     {
+        Node *no = findFirstUnvisitedNode(root, 'X');
         pop();
         push('/');
+        insertNode(no, '/');
         goto q1;
     }
 
-    //p16: C -> h=E | i=E | j=E | k=E | z=E
+    // p16: C -> h=E | i=E | j=E | k=E | z=E
     else if ((token == 'h') && (stack[top] == 'C'))
     {
+        Node *no = findFirstUnvisitedNode(root, 'C');
         pop();
         push('E');
         push('=');
+
         push('h');
+        insertNode(no, 'h');
+        insertNode(no, '=');
+        insertNode(no, 'E');
         goto q1;
     }
     else if ((token == 'i') && (stack[top] == 'C'))
@@ -234,13 +402,14 @@ q1:
     {
         pop();
         push(')');
+
         push('E');
         push('X');
         push('E');
         push('(');
         goto q1;
     }
-    //p22: C -> w(E){ C; }
+    // p22: C -> w(E){ C; }
     else if ((token == 'w') && (stack[top] == 'C'))
     {
         pop();
@@ -289,7 +458,7 @@ q1:
         goto q1;
     }
 
-    //fazer produções que consumam (identifiquem) os terminais m,r,0,1,x,y,(,),+,-,*,/,h,i,j,k,z,w,{,},;,f,=,o
+    // fazer produções que consumam (identifiquem) os terminais m,r,0,1,x,y,(,),+,-,*,/,h,i,j,k,z,w,{,},;,f,=,o
     else if ((token == 'm') && (stack[top] == 'm'))
     {
         pop();
@@ -392,55 +561,54 @@ q1:
         posicao++;
         goto q1;
     }
-    else if((token == 'w') && (stack[top] == 'w'))
+    else if ((token == 'w') && (stack[top] == 'w'))
     {
         pop();
         posicao++;
         goto q1;
     }
-    else if((token == '{') && (stack[top] == '{'))
+    else if ((token == '{') && (stack[top] == '{'))
     {
         pop();
         posicao++;
         goto q1;
     }
-    else if((token == '}') && (stack[top] == '}'))
+    else if ((token == '}') && (stack[top] == '}'))
     {
         pop();
         posicao++;
         goto q1;
     }
-    else if((token == ';') && (stack[top] == ';'))
+    else if ((token == ';') && (stack[top] == ';'))
     {
         pop();
         posicao++;
         goto q1;
     }
-    else if((token == 'f') && (stack[top] == 'f'))
+    else if ((token == 'f') && (stack[top] == 'f'))
     {
         pop();
         posicao++;
         goto q1;
     }
-    else if((token == '=') && (stack[top] == '='))
+    else if ((token == '=') && (stack[top] == '='))
     {
         pop();
         posicao++;
         goto q1;
     }
-    else if((token == 'o') && (stack[top] == 'o'))
+    else if ((token == 'o') && (stack[top] == 'o'))
     {
         pop();
         posicao++;
         goto q1;
     }
-    
-
-
 
     else if (stack[top] == '\0' && token == '\0')
     {
-        printf("palavra consumida");
+        printf("palavra consumida\n\n");
+        dfs(root->children[0]->children[4]);
+
     }
     else
     {
@@ -448,3 +616,4 @@ q1:
         return 1;
     }
 }
+
